@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity >=0.4.24 <0.6.0;
 
 import "./IBaseSecurityToken.sol";
 import "./lib/ERC20.sol";
@@ -38,7 +38,7 @@ contract BaseSecurityToken is IBaseSecurityToken, ERC20 {
         ERC20._burn(account, amount);
     }
 
-    function attachDocument(bytes32 _name, string _uri, bytes32 _contentHash) external {
+    function attachDocument(bytes32 _name, string calldata _uri, bytes32 _contentHash) external {
         require(_name.length > 0, "name of the document must not be empty");
         require(bytes(_uri).length > 0, "external URI to the document must not be empty");
         require(_contentHash.length > 0, "content hash is required, use SHA-1 when in doubt");
@@ -46,7 +46,7 @@ contract BaseSecurityToken is IBaseSecurityToken, ERC20 {
         documents[_name] = Document(_name, _uri, _contentHash);
     }
    
-    function lookupDocument(bytes32 _name) external view returns (string, bytes32) {
+    function lookupDocument(bytes32 _name) external view returns (string memory, bytes32) {
         Document storage doc = documents[_name];
         return (doc.uri, doc.contentHash);
     }
@@ -54,22 +54,22 @@ contract BaseSecurityToken is IBaseSecurityToken, ERC20 {
     // Uses status codes from ERC-1066
     byte private constant STATUS_ALLOWED = 0x11;
 
-    function checkTransferAllowed (address, address, uint256) public view returns (byte) {
+    function checkTransferAllowed(address, address, uint256) public view returns (byte) {
         // default
         return STATUS_ALLOWED;
     }
    
-    function checkTransferFromAllowed (address, address, uint256) public view returns (byte) {
+    function checkTransferFromAllowed(address, address, uint256) public view returns (byte) {
         // default
         return STATUS_ALLOWED;
     }
    
-    function checkMintAllowed (address, uint256) public view returns (byte) {
+    function checkMintAllowed(address, uint256) public view returns (byte) {
         // default
         return STATUS_ALLOWED;
     }
    
-    function checkBurnAllowed (address, uint256) public view returns (byte) {
+    function checkBurnAllowed(address, uint256) public view returns (byte) {
         // default
         return STATUS_ALLOWED;
     }
