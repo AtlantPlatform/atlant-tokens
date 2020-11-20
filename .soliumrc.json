@@ -11,6 +11,12 @@
     "indentation": [
       "error",
       4
-    ]
+    ],
+    "max-len": [
+      "warning",
+      100
+    ],
+    "security/no-inline-assembly": "warning",
+    "security/no-assign-params": "warning"
   }
 }

@@ -12,9 +12,9 @@ attach:
 
 compile: # the main contract
 	#solc contracts/BaseSecurityToken.sol
-	#docker run -v $(CURDIR):/sources ethereum/solc:0.5.16 -o /sources/bin --abi --bin --overwrite /sources/contracts/RegulatorServicePrototype.sol
+	docker run -v $(CURDIR):/sources ethereum/solc:0.5.16 -o /sources/bin --abi --bin --overwrite /sources/contracts/RegulatorServicePrototype.sol
 	docker run -v $(CURDIR):/sources ethereum/solc:0.5.16 -o /sources/bin --abi --bin --overwrite /sources/contracts/TokenPrototype.sol
 
 lint:
-	solhint "contracts/**/*.sol"
+	#solhint "contracts/**/*.sol"
 	solium -d contracts/

@@ -4,8 +4,8 @@ pragma solidity >=0.4.24 <0.6.0;
 library AddrSet {
     // We define a new struct datatype that will be used to
     // hold its data in the calling contract.
-    struct Data { 
-        mapping(address => bool) flags; 
+    struct Data {
+        mapping(address => bool) flags;
     }
 
     // Note that the first parameter is of type "storage
@@ -30,7 +30,11 @@ library AddrSet {
         return true;
     }
 
-    function contains(Data storage self, address value) internal view returns (bool) {
+    function contains(Data storage self, address value)
+        internal
+        view
+        returns (bool)
+    {
         return self.flags[value];
     }
 }

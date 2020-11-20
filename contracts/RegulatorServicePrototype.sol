@@ -23,6 +23,10 @@ contract RegulatorServicePrototype is IRegulatorService, Ownable {
     event AddrApproved(address indexed addr, address indexed by);
     event AddrSuspended(address indexed addr, address indexed by);
 
+    // Uses status codes from ERC-1066
+    byte private constant DISALLOWED = 0x10;
+    byte private constant ALLOWED = 0x11;
+
     // Contract state
     AddrSet.Data private kycProviders;
     mapping(address => Status) public kycStatus;
@@ -67,11 +71,18 @@ contract RegulatorServicePrototype is IRegulatorService, Ownable {
         emit AddrSuspended(addr, msg.sender);
     }
 
-    // Uses status codes from ERC-1066
-    byte private constant DISALLOWED = 0x10;
-    byte private constant ALLOWED = 0x11;
-
-    function check(address /*_token*/, address _spender, address _from, address _to, uint256 /*_amount*/) external view returns (byte) {
+    function check(
+        address _token,
+        address _spender,
+        address _from,
+        address _to,
+        uint256 /*_amount*/
+    )
+        external
+        view
+        returns (byte)
+    {
+        require(_token != address(0));
         require(_spender != address(0));
         require(_from != address(0) || _to != address(0));
 

@@ -13,7 +13,7 @@
 
 pragma solidity >=0.4.18 <0.6.0;
 
-import './lib/Ownable.sol';
+import "./lib/Ownable.sol";
 
 /// @notice A service that points to a `RegulatorService`
 contract ServiceRegistry is Ownable {
@@ -54,7 +54,7 @@ contract ServiceRegistry is Ownable {
     *
     * @param _service The address of the new `RegulatorService`
     */
-    function replaceService(address _service) onlyOwner withContract(_service) public {
+    function replaceService(address _service) public onlyOwner withContract(_service) {
         address oldService = service;
         service = _service;
         emit ReplaceService(oldService, service);

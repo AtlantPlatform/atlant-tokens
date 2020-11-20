@@ -9,7 +9,6 @@ import "./lib/ERC20.sol";
  * @dev see https://github.com/ethereum/EIPs/pull/1462
  */
 contract BaseSecurityToken is IBaseSecurityToken, ERC20 {
-    
     struct Document {
         bytes32 name;
         string uri;
@@ -45,7 +44,7 @@ contract BaseSecurityToken is IBaseSecurityToken, ERC20 {
         require(documents[_name].name.length == 0, "document must not be existing under the same name");
         documents[_name] = Document(_name, _uri, _contentHash);
     }
-   
+
     function lookupDocument(bytes32 _name) external view returns (string memory, bytes32) {
         Document storage doc = documents[_name];
         return (doc.uri, doc.contentHash);
@@ -58,17 +57,17 @@ contract BaseSecurityToken is IBaseSecurityToken, ERC20 {
         // default
         return STATUS_ALLOWED;
     }
-   
+
     function checkTransferFromAllowed(address, address, uint256) public view returns (byte) {
         // default
         return STATUS_ALLOWED;
     }
-   
+
     function checkMintAllowed(address, uint256) public view returns (byte) {
         // default
         return STATUS_ALLOWED;
     }
-   
+
     function checkBurnAllowed(address, uint256) public view returns (byte) {
         // default
         return STATUS_ALLOWED;

@@ -1,5 +1,5 @@
 {
-  "extends": "default",
+  "extends": "solhint:recommended",
   "rules": {
     "compiler-fixed": false,
     "no-simple-event-func-name": false
