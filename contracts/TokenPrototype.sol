@@ -24,8 +24,14 @@ contract TokenPrototype is IBaseSecurityToken, ERC20, Ownable {
 
     constructor(ServiceRegistry _registry, uint256 _cap) public Ownable() {
         require(address(_registry) != address(0));
-        require(_cap > 0);
+        require(_cap >= 0);
         registry = _registry;
+        cap = _cap;
+        _setupDecimals(2);
+    }
+
+    function setCap(uint256 _cap) public onlyOwner {
+        require(_cap >= totalSupply(), "cap can not be set less than totalSupply");
         cap = _cap;
     }
 
@@ -42,22 +48,13 @@ contract TokenPrototype is IBaseSecurityToken, ERC20, Ownable {
     }
 
     function mint(address account, uint256 amount) public onlyOwner {
-        _mint(account, amount);
-    }
-
-    function burn(address account, uint256 amount) public onlyOwner {
-        _burn(account, amount);
-    }
-
-    function _mint(address account, uint256 amount) internal {
-        require(totalSupply().add(amount) <= cap);
-
+        require(totalSupply().add(amount) <= cap, "totalSupply must not exceed cap");
         byte status = checkMintAllowed(account, amount);
         require(status == STATUS_ALLOWED, hexCode(status));
         ERC20._mint(account, amount);
     }
 
-    function _burn(address account, uint256 amount) internal {
+    function burn(address account, uint256 amount) public onlyOwner {
         byte status = checkBurnAllowed(account, amount);
         require(status == STATUS_ALLOWED, hexCode(status));
         ERC20._burn(account, amount);
@@ -121,17 +118,18 @@ contract TokenPrototype is IBaseSecurityToken, ERC20, Ownable {
         bytes memory result = new bytes(4);
         result[0] = byte("0");
         result[1] = byte("x");
-        result[2] = byte(getHexDigit(code & 0x0F));
-        result[3] = byte(getHexDigit(code >> 4));
+        result[2] = byte(getHexDigit(code >> 4));
+        result[3] = byte(getHexDigit(code & 0x0F));
 
         return string(result);
     }
 
     function getHexDigit(uint8 _digit) private pure returns (uint8) {
-        _digit += 0x30; // ASCII number
-        if (_digit > 0x39) { // ASCII letter A-F
-            _digit += 7;
+        uint8 result = _digit;
+        result += 0x30; // ASCII number
+        if (result > 0x39) { // ASCII letter A-F
+            result += 7;
         }
-        return _digit;
+        return result;
     }
 }

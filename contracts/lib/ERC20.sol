@@ -17,7 +17,12 @@ contract ERC20 is IERC20 {
 
     mapping(address => mapping(address => uint256)) private _allowed;
 
+    uint8 private _decimals;
     uint256 private _totalSupply;
+
+    function decimals() public view returns (uint8) {
+        return _decimals;
+    }
 
     /**
     * @dev Total number of tokens in existence
@@ -201,5 +206,9 @@ contract ERC20 is IERC20 {
         _allowed[account][msg.sender] = _allowed[account][msg.sender].sub(
             amount);
         _burn(account, amount);
+    }
+
+    function _setupDecimals(uint8 decimals_) internal {
+        _decimals = decimals_;
     }
 }

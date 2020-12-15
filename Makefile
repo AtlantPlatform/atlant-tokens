@@ -2,10 +2,11 @@ all:
 
 init:
 	mkdir -p var
-	geth --datadir=var/chain/ init var/genesis.json
+	docker run -v $(CURDIR)/var:/var ethereum/client-go:v1.9.2 --datadir=/var/chain/ init /var/genesis.json
 
 node:
-	geth --datadir=var/chain/ --rpc
+	#geth --datadir=var/chain/ --rpc
+	docker run -v $(CURDIR)/var:/var -p 127.0.0.1:8545:8545/tcp ethereum/client-go:v1.9.2 --datadir=/var/chain/ --networkid 15 --nodiscover --rpc --rpcaddr "0.0.0.0"
 
 attach:
 	geth attach var/chain/geth.ipc

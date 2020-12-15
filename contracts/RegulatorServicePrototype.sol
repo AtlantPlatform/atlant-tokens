@@ -33,13 +33,13 @@ contract RegulatorServicePrototype is IRegulatorService, Ownable {
 
     // registerProvider adds a new 3rd-party provider that is authorized to perform KYC.
     function registerProvider(address addr) public onlyOwner {
-        require(AddrSet.insert(kycProviders, addr));
+        require(AddrSet.insert(kycProviders, addr), "already registered");
         emit ProviderAdded(addr);
     }
 
     // removeProvider removes a 3rd-party provider that was authorized to perform KYC.
     function removeProvider(address addr) public onlyOwner {
-        require(AddrSet.remove(kycProviders, addr));
+        require(AddrSet.remove(kycProviders, addr), "not registered");
         emit ProviderRemoved(addr);
     }
 
@@ -57,7 +57,7 @@ contract RegulatorServicePrototype is IRegulatorService, Ownable {
     // Can be invoked by owner or authorized KYC providers only.
     function approveAddr(address addr) public onlyAuthorized {
         Status status = kycStatus[addr];
-        require(status != Status.Approved);
+        require(status != Status.Approved, "already approved");
         kycStatus[addr] = Status.Approved;
         emit AddrApproved(addr, msg.sender);
     }
@@ -66,7 +66,7 @@ contract RegulatorServicePrototype is IRegulatorService, Ownable {
     // Can be invoked by owner or authorized KYC providers only.
     function suspendAddr(address addr) public onlyAuthorized {
         Status status = kycStatus[addr];
-        require(status != Status.Suspended);
+        require(status != Status.Suspended, "already suspended");
         kycStatus[addr] = Status.Suspended;
         emit AddrSuspended(addr, msg.sender);
     }
@@ -82,9 +82,9 @@ contract RegulatorServicePrototype is IRegulatorService, Ownable {
         view
         returns (byte)
     {
-        require(_token != address(0));
-        require(_spender != address(0));
-        require(_from != address(0) || _to != address(0));
+        require(_token != address(0), "token address is empty");
+        require(_spender != address(0), "spender address is empty");
+        require(_from != address(0) || _to != address(0), "undefined account addresses");
 
         if (getStatus(_spender) != Status.Approved) {
             return DISALLOWED;
@@ -116,7 +116,10 @@ contract RegulatorServicePrototype is IRegulatorService, Ownable {
 
     // onlyAuthorized modifier restricts write access to contract owner and authorized KYC providers.
     modifier onlyAuthorized() {
-        require(msg.sender == owner || AddrSet.contains(kycProviders, msg.sender));
+        require(
+            msg.sender == owner || AddrSet.contains(kycProviders, msg.sender),
+            "onlyAuthorized can do"
+        );
         _;
     }
 }

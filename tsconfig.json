@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "lib": ["ES2018"],
+    "module": "CommonJS",
+    "target": "ES2018",
+    "strict": true,
+    "esModuleInterop": true,
+    "types": ["@types/node", "@types/chai", "@types/mocha"],
+    "typeRoots": ["./node_modules/@types", "./types"]
+  },
+  "include": ["**/*.ts", "migrations/1_initial_migration.js", "migrations/2_create_regulator_service.js"],
+  "exclude": ["node_modules", "build", "cache", "artifacts"]
+}

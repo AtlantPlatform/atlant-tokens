@@ -33,7 +33,7 @@ contract ServiceRegistry is Ownable {
     modifier withContract(address _addr) {
         uint length;
         assembly { length := extcodesize(_addr) }
-        require(length > 0);
+        require(length > 0, "not a contract");
         _;
     }
 
