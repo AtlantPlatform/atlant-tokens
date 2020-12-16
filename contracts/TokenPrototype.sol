@@ -1,12 +1,15 @@
-pragma solidity >=0.4.24 <0.6.0;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.7.5;
 
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "./IBaseSecurityToken.sol";
-import "./lib/ERC20.sol";
-import "./lib/Ownable.sol";
-import "./ServiceRegistry.sol";
 import "./IRegulatorService.sol";
+import "./ServiceRegistry.sol";
 
 contract TokenPrototype is IBaseSecurityToken, ERC20, Ownable {
+    using SafeMath for uint256;
+
     struct Document {
         string uri;
         bytes32 contentHash;
@@ -22,11 +25,18 @@ contract TokenPrototype is IBaseSecurityToken, ERC20, Ownable {
     ServiceRegistry public registry;
     uint256 public cap;
 
-    constructor(ServiceRegistry _registry, uint256 _cap) public Ownable() {
-        require(address(_registry) != address(0));
-        require(_cap >= 0);
-        registry = _registry;
-        cap = _cap;
+    constructor(
+        ServiceRegistry registry_,
+        uint256 cap_,
+        string memory name_,
+        string memory symbol_
+    )
+        ERC20(name_, symbol_)
+        Ownable()
+    {
+        require(address(registry_) != address(0), "registry is zero address");
+        registry = registry_;
+        cap = cap_;
         _setupDecimals(2);
     }
 
@@ -35,48 +45,36 @@ contract TokenPrototype is IBaseSecurityToken, ERC20, Ownable {
         cap = _cap;
     }
 
-    function transfer(address to, uint256 value) public returns (bool) {
-        byte status = checkTransferAllowed(msg.sender, to, value);
-        require(status == STATUS_ALLOWED, hexCode(status));
-        return ERC20.transfer(to, value);
-    }
-
-    function transferFrom(address from, address to, uint256 value) public returns (bool) {
-        byte status = checkTransferFromAllowed(from, to, value);
-        require(status == STATUS_ALLOWED, hexCode(status));
-        return ERC20.transferFrom(from, to, value);
-    }
-
     function mint(address account, uint256 amount) public onlyOwner {
         require(totalSupply().add(amount) <= cap, "totalSupply must not exceed cap");
-        byte status = checkMintAllowed(account, amount);
-        require(status == STATUS_ALLOWED, hexCode(status));
         ERC20._mint(account, amount);
     }
 
     function burn(address account, uint256 amount) public onlyOwner {
-        byte status = checkBurnAllowed(account, amount);
-        require(status == STATUS_ALLOWED, hexCode(status));
         ERC20._burn(account, amount);
     }
 
-    function attachDocument(bytes32 _name, string calldata _uri, bytes32 _contentHash) external {
-        // require(_name != 0, "name must not be empty");
-        // require(bytes(_uri).length > 0, "uri must not be empty");
-        // require(_contentHash != 0, "content hash is required");
-        // require(documents[_name].contentHash == 0, "document must not be existing");
+    function attachDocument(bytes32 _name, string calldata _uri, bytes32 _contentHash)
+        external
+        override
+    {
+        require(_name != 0, "name is required");
+        require(bytes(_uri).length > 0, "uri is required");
+        require(_contentHash != 0, "content hash is required");
+        require(documents[_name].contentHash == 0, "document already exists");
 
         documents[_name] = Document(_uri, _contentHash);
         emit DocumentUpdated(_name, _uri, _contentHash);
     }
 
-    function lookupDocument(bytes32 _name) public view returns (string memory, bytes32) {
+    function lookupDocument(bytes32 _name) public override view returns (string memory, bytes32) {
         Document storage doc = documents[_name];
         return (doc.uri, doc.contentHash);
     }
 
     function checkTransferAllowed(address from, address to, uint256 value)
         public
+        override
         view
         returns (byte)
     {
@@ -85,18 +83,28 @@ contract TokenPrototype is IBaseSecurityToken, ERC20, Ownable {
 
     function checkTransferFromAllowed(address from, address to, uint256 value)
         public
+        override
         view
         returns (byte)
     {
         return _check(msg.sender, from, to, value);
     }
 
-    function checkMintAllowed(address to, uint256 value) public view returns (byte) {
+    function checkMintAllowed(address to, uint256 value) public override view returns (byte) {
         return _check(msg.sender, address(0), to, value);
     }
 
-    function checkBurnAllowed(address from, uint256 value) public view returns (byte) {
+    function checkBurnAllowed(address from, uint256 value) public override view returns (byte) {
         return _check(msg.sender, from, address(0), value);
+    }
+
+    function renounceOwnership() public onlyOwner override view {
+        revert("not supported");
+    }
+
+    function _beforeTokenTransfer(address from, address to, uint256 amount) internal override view {
+        byte status = _check(msg.sender, from, to, amount);
+        require(status == STATUS_ALLOWED, hexCode(status));
     }
 
     function _check(address sender, address from, address to, uint256 value)
@@ -112,8 +120,6 @@ contract TokenPrototype is IBaseSecurityToken, ERC20, Ownable {
     }
 
     function hexCode(byte _code) private pure returns (string memory) {
-        require (_code >= 0);
-
         uint8 code = uint8(_code);
         bytes memory result = new bytes(4);
         result[0] = byte("0");

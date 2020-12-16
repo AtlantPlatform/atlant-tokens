@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: APACHE-2.0
 /**
    Copyright (c) 2017 Harbor Platform, Inc.
    Licensed under the Apache License, Version 2.0 (the “License”);
@@ -11,9 +12,9 @@
    limitations under the License.
 */
 
-pragma solidity >=0.4.18 <0.6.0;
+pragma solidity 0.7.5;
 
-import "./lib/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 /// @notice A service that points to a `RegulatorService`
 contract ServiceRegistry is Ownable {
@@ -43,7 +44,7 @@ contract ServiceRegistry is Ownable {
     * @param _service The address of the `RegulatorService`
     *
     */
-    constructor(address _service) public {
+    constructor(address _service) Ownable() {
         service = _service;
     }
 

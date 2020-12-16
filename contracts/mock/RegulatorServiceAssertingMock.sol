@@ -1,6 +1,7 @@
-pragma solidity >=0.4.24 <0.6.0;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.7.5;
 
-import ".././IRegulatorService.sol";
+import "../IRegulatorService.sol";
 
 contract RegulatorServiceAssertingMock is IRegulatorService {
     address public token;
@@ -34,6 +35,7 @@ contract RegulatorServiceAssertingMock is IRegulatorService {
         uint256 _amount
     )
         external
+        override
         view
         returns (byte)
     {

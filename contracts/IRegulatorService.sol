@@ -1,3 +1,4 @@
+ // SPDX-License-Identifier: APACHE-2.0
  /**
    Copyright (c) 2017 Harbor Platform, Inc.
    Licensed under the Apache License, Version 2.0 (the “License”);
@@ -11,7 +12,7 @@
    limitations under the License.
 */
 
-pragma solidity >=0.4.24 <0.6.0;
+pragma solidity 0.7.5;
 
 interface IRegulatorService {
     function check(

@@ -1,4 +1,5 @@
-pragma solidity >=0.4.24 <0.6.0;
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.4.24 <0.8.0;
 
 // AddrSet is an address set based on http://solidity.readthedocs.io/en/develop/contracts.html#libraries
 library AddrSet {

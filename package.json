@@ -13,6 +13,7 @@
     "postinstall": "npx truffle compile && npm run generate-types"
   },
   "dependencies": {
+    "@openzeppelin/contracts": "3.3.0",
     "truffle-hdwallet-provider": "^1.0.17"
   }
 }

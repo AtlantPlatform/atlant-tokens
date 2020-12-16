@@ -1,8 +1,9 @@
-pragma solidity >=0.4.24 <0.6.0;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.7.5;
 
-import "./IBaseSecurityToken.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "./lib/AddrSet.sol";
-import "./lib/Ownable.sol";
+import "./IBaseSecurityToken.sol";
 import "./IRegulatorService.sol";
 
 contract RegulatorServicePrototype is IRegulatorService, Ownable {
@@ -31,6 +32,9 @@ contract RegulatorServicePrototype is IRegulatorService, Ownable {
     AddrSet.Data private kycProviders;
     mapping(address => Status) public kycStatus;
 
+    constructor() Ownable() {
+    }
+
     // registerProvider adds a new 3rd-party provider that is authorized to perform KYC.
     function registerProvider(address addr) public onlyOwner {
         require(AddrSet.insert(kycProviders, addr), "already registered");
@@ -45,7 +49,7 @@ contract RegulatorServicePrototype is IRegulatorService, Ownable {
 
     // isProvider returns true if the given address was authorized to perform KYC.
     function isProvider(address addr) public view returns (bool) {
-        return addr == owner || AddrSet.contains(kycProviders, addr);
+        return addr == owner() || AddrSet.contains(kycProviders, addr);
     }
 
     // getStatus returns the KYC status for a given address.
@@ -79,6 +83,7 @@ contract RegulatorServicePrototype is IRegulatorService, Ownable {
         uint256 /*_amount*/
     )
         external
+        override
         view
         returns (byte)
     {
@@ -117,7 +122,7 @@ contract RegulatorServicePrototype is IRegulatorService, Ownable {
     // onlyAuthorized modifier restricts write access to contract owner and authorized KYC providers.
     modifier onlyAuthorized() {
         require(
-            msg.sender == owner || AddrSet.contains(kycProviders, msg.sender),
+            msg.sender == owner() || AddrSet.contains(kycProviders, msg.sender),
             "onlyAuthorized can do"
         );
         _;

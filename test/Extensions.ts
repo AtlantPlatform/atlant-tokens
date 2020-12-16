@@ -4,6 +4,7 @@ declare global {
         shouldHaveResult<TResult>(expectedResult: TResult): Promise<void>;
     }
 }
+
 const EVM_REVERT_ERROR_PREFIX = "Returned error: VM Exception while processing transaction: revert ";
 
 Promise.prototype.shouldRevertWith = async function(reason: string) {
