@@ -46,7 +46,7 @@ contract("RegulatorService", function(accounts: string[]) {
             let address = accounts[1];
 
             let status = await instance.getStatus(address);
-            assert.equal(status, KycStatus.Unknown);
+            assert.equal(status.toNumber(), KycStatus.Unknown);
         });
     });
 
@@ -139,7 +139,7 @@ contract("RegulatorService", function(accounts: string[]) {
             assert.equal(event.args.by, by);
 
             let status = await instance.getStatus(address);
-            assert.equal(status, KycStatus.Approved);
+            assert.equal(status.toNumber(), KycStatus.Approved);
         }
 
         it("should revert on repeat", async function() {
@@ -183,7 +183,7 @@ contract("RegulatorService", function(accounts: string[]) {
             assert.equal(event.args.by, by);
 
             let status = await instance.getStatus(address);
-            assert.equal(status, KycStatus.Suspended);
+            assert.equal(status.toNumber(), KycStatus.Suspended);
         }
 
         it("should revert on repeat", async function() {

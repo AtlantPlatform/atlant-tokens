@@ -77,7 +77,7 @@ contract("Token", function(accounts: string[]) {
             let event = getSingleEvent<Transfer>(result);
             assert.equal(event.args.from, ZERO_ADDRESS);
             assert.equal(event.args.to, address);
-            assert.equal(event.args.value, amount);
+            assert.equal(event.args.value.toNumber(), amount);
 
             await instance.totalSupply().shouldHaveResult(amount);
             await instance.balanceOf(address).shouldHaveResult(amount);
