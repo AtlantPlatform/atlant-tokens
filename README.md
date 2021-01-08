@@ -20,7 +20,7 @@ Join the [discussion](https://ethereum-magicians.org/t/erc-1462-base-security-to
 
 ## Reference Implementation
 
-Please refer to [IBaseSecurityToken.sol](contracts/IBaseSecurityToken.sol) and [BaseSecurityToken.sol](contracts/BaseSecurityToken.sol).
+Please refer to [IBaseSecurityToken.sol](contracts/IBaseSecurityToken.sol) and [TokenPrototype.sol](contracts/TokenPrototype.sol).
 
 ```
 $ make lint
